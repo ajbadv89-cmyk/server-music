@@ -26,18 +26,23 @@ MANIFEST_DATA = {
     ]
 }
 
+# Root route
 @app.get("/")
 async def root():
     return {"status": "online", "message": "BitChord Addon Server is running!"}
 
+# Manifest route (Added multiple possible paths for Vercel)
 @app.get("/manifest.json")
+@app.get("/api/manifest.json")
 async def get_manifest():
     return JSONResponse(
         content=MANIFEST_DATA, 
         headers={"Content-Type": "application/json", "Cache-Control": "no-store"}
     )
 
+# Search route
 @app.get("/search")
+@app.get("/api/search")
 async def search(q: str = ""):
     try:
         search_results = ytmusic.search(q, limit=20)
@@ -58,7 +63,9 @@ async def search(q: str = ""):
     except Exception:
         return JSONResponse(content={"tracks": []}, status_code=500)
 
+# Stream route
 @app.get("/stream/{track_id}")
+@app.get("/api/stream/{track_id}")
 async def stream(track_id: str):
     return JSONResponse(content={
         "url": f"https://www.youtube.com/watch?v={track_id}",
